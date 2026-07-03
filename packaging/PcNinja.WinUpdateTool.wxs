@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix
+  xmlns="http://wixtoolset.org/schemas/v4/wxs"
+  xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package
+    Name="PcNinja WinUpdate Tool"
+    Manufacturer="PcNinja"
+    Version="1.1.2.0"
+    UpgradeCode="{7BD3183C-C7D9-4F0C-BAE9-FF143A450F53}"
+    Scope="perMachine">
+
+    <SummaryInformation
+      Description="PcNinja WinUpdate Tool installer"
+      Manufacturer="PcNinja" />
+
+    <MajorUpgrade
+      DowngradeErrorMessage="A newer version of PcNinja WinUpdate Tool is already installed." />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="PcNinjaIcon" SourceFile="$(SourceDir)\assets\PcNinja.ico" />
+    <Property Id="ARPPRODUCTICON" Value="PcNinjaIcon" />
+    <Property Id="ARPURLINFOABOUT" Value="https://www.PcNinja.Pro" />
+    <Property Id="ARPHELPLINK" Value="https://www.PcNinja.Pro" />
+    <Property Id="PCNINJA_ENABLE_SCHEDULE" Secure="yes" />
+    <Property Id="PCNINJA_FREQUENCY" Value="Monthly" Secure="yes" />
+    <Property Id="PCNINJA_TIME" Value="03:00" Secure="yes" />
+    <Property Id="PCNINJA_DAY_OF_WEEK" Secure="yes" />
+    <Property Id="PCNINJA_MONTHLY_DAY" Value="15" Secure="yes" />
+    <Property Id="PCNINJA_RUN_AT_STARTUP" Secure="yes" />
+    <Property Id="PCNINJA_STARTUP_DELAY" Value="5" Secure="yes" />
+    <Property Id="PCNINJA_RUN_IF_MISSED" Value="1" Secure="yes" />
+    <Property Id="PCNINJA_WAKE_TO_RUN" Secure="yes" />
+    <Property Id="PCNINJA_ALLOW_FIRMWARE" Secure="yes" />
+    <Property Id="PCNINJA_REBOOT_PROMPT" Value="1" Secure="yes" />
+    <Property Id="PCNINJA_ENABLE_AUTORETRY" Value="1" Secure="yes" />
+    <Property Id="PCNINJA_RETRY_INITIAL_DELAY" Value="5" Secure="yes" />
+    <Property Id="PCNINJA_RETRY_MAX_ATTEMPTS" Value="3" Secure="yes" />
+    <Property Id="PCNINJA_RETRY_BACKOFF" Value="2" Secure="yes" />
+    <Property Id="PCNINJA_MINIMUM_COOLDOWN" Value="5" Secure="yes" />
+    <Property Id="INSTALLFOLDER">
+      <RegistrySearch
+        Id="PreviousInstallFolderSearch"
+        Root="HKLM"
+        Key="Software\PcNinja\WinUpdateTool"
+        Name="InstallFolder"
+        Type="raw" />
+    </Property>
+    <Property Id="PCN_ES" Secure="yes" />
+    <Property Id="PCN_FR" Secure="yes" />
+    <Property Id="PCN_TM" Secure="yes" />
+    <Property Id="PCN_DOW" Secure="yes" />
+    <Property Id="PCN_MD" Secure="yes" />
+    <Property Id="PCN_ST" Secure="yes" />
+    <Property Id="PCN_SD" Secure="yes" />
+    <Property Id="PCN_MISS" Secure="yes" />
+    <Property Id="PCN_WAKE" Secure="yes" />
+    <Property Id="PCN_FW" Secure="yes" />
+    <Property Id="PCN_RB" Secure="yes" />
+    <Property Id="PCN_AR" Secure="yes" />
+    <Property Id="PCN_RD" Secure="yes" />
+    <Property Id="PCN_RA" Secure="yes" />
+    <Property Id="PCN_BO" Secure="yes" />
+    <Property Id="PCN_CD" Secure="yes" />
+    <WixVariable Id="WixUILicenseRtf" Value="$(SourceDir)\packaging\PcNinja-License.rtf" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="PcNinjaProgramFilesFolder" Name="PcNinja">
+        <Directory Id="INSTALLFOLDER" Name="WinUpdateTool">
+          <Directory Id="AssetsFolder" Name="assets" />
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ProgramMenuPcNinjaFolder" Name="PcNinja" />
+    </StandardDirectory>
+
+    <ComponentGroup Id="AppFiles">
+      <Component Id="CoreScriptsComponent" Directory="INSTALLFOLDER" Guid="{49143776-D759-4C4E-9471-47F64062A046}">
+        <File Id="HostExe" Source="$(SourceDir)\PcNinja.WinUpdateTool.exe" KeyPath="yes" />
+        <File Id="CliExe" Source="$(SourceDir)\PcNinja.WinUpdateTool.Cli.exe" />
+        <File Id="WinUpdateToolPs1" Source="$(SourceDir)\WinUpdateTool.ps1" />
+        <File Id="WinUpdateCorePsm1" Source="$(SourceDir)\WinUpdateCore.psm1" />
+        <File Id="LaunchVbs" Source="$(SourceDir)\Launch-WinUpdateTool.vbs" />
+        <File Id="ReadmeMd" Source="$(SourceDir)\README.md" />
+      </Component>
+
+      <Component Id="MsiCleanupComponent" Directory="INSTALLFOLDER" Guid="{32077948-9FA0-4B3B-B2C1-F7A6934523E2}">
+        <File Id="MsiCleanupCmd" Source="$(SourceDir)\MsiCleanup-WinUpdateTool.cmd" KeyPath="yes" />
+        <File Id="MsiCleanupPs1" Source="$(SourceDir)\MsiCleanup-WinUpdateTool.ps1" />
+        <File Id="MsiConfigureCmd" Source="$(SourceDir)\MsiConfigure-WinUpdateTool.cmd" />
+        <File Id="MsiConfigurePs1" Source="$(SourceDir)\MsiConfigure-WinUpdateTool.ps1" />
+      </Component>
+
+      <Component Id="AssetsComponent" Directory="AssetsFolder" Guid="{4ADCE33B-DB74-425D-8EFD-823AC5090691}">
+        <File Id="NinjaLogoPng" Source="$(SourceDir)\assets\Ninja-DMT.png" KeyPath="yes" />
+        <File Id="PcNinjaIco" Source="$(SourceDir)\assets\PcNinja.ico" />
+      </Component>
+
+      <Component Id="LegacyRegistryCleanupComponent" Directory="INSTALLFOLDER" Guid="{BE79D277-21C0-4AE8-89B4-550BC4EE3376}">
+        <RemoveRegistryKey
+          Root="HKLM"
+          Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\PcNinja WinUpdate Tool"
+          Action="removeOnInstall" />
+        <RegistryValue
+          Root="HKLM"
+          Key="Software\PcNinja\WinUpdateTool"
+          Name="InstalledByMsi"
+          Type="integer"
+          Value="1"
+          KeyPath="yes" />
+        <RegistryValue
+          Root="HKLM"
+          Key="Software\PcNinja\WinUpdateTool"
+          Name="InstallFolder"
+          Type="string"
+          Value="[INSTALLFOLDER]" />
+      </Component>
+    </ComponentGroup>
+
+    <Component Id="StartMenuShortcutComponent" Directory="ProgramMenuPcNinjaFolder" Guid="{1A6E3D60-F057-4AA7-A56F-A2A47072EB43}">
+      <Shortcut
+        Id="StartMenuShortcut"
+        Name="PcNinja WinUpdate Tool"
+        Description="Run PcNinja WinUpdate Tool"
+        Target="[INSTALLFOLDER]PcNinja.WinUpdateTool.exe"
+        WorkingDirectory="INSTALLFOLDER"
+        Icon="PcNinjaIcon" />
+      <RemoveFolder Id="RemoveProgramMenuPcNinjaFolder" On="uninstall" />
+      <RegistryValue
+        Root="HKCU"
+        Key="Software\PcNinja\WinUpdateTool"
+        Name="StartMenuShortcut"
+        Type="integer"
+        Value="1"
+        KeyPath="yes" />
+    </Component>
+
+    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+
+    <UI>
+      <Dialog Id="PcNinjaScheduleDlg" Width="370" Height="270" Title="[ProductName] Setup">
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="340" Height="18" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Schedule updates" />
+        <Control Id="Description" Type="Text" X="25" Y="25" Width="320" Height="22" Transparent="yes" NoPrefix="yes" Text="Optional scheduled task configuration. This is off unless the box is checked." />
+        <Control Id="TopLine" Type="Line" X="0" Y="50" Width="370" Height="0" />
+
+        <Control Id="EnableSchedule" Type="CheckBox" X="25" Y="62" Width="300" Height="17" Property="PCNINJA_ENABLE_SCHEDULE" CheckBoxValue="1" Text="Create a Windows scheduled task during install" />
+
+        <Control Id="FrequencyLabel" Type="Text" X="40" Y="88" Width="65" Height="15" Text="Frequency:" />
+        <Control Id="FrequencyCombo" Type="ComboBox" X="108" Y="84" Width="90" Height="18" Property="PCNINJA_FREQUENCY" ComboList="yes">
+          <ComboBox Property="PCNINJA_FREQUENCY">
+            <ListItem Text="Daily" Value="Daily" />
+            <ListItem Text="Weekly" Value="Weekly" />
+            <ListItem Text="Monthly" Value="Monthly" />
+            <ListItem Text="Startup" Value="Startup" />
+          </ComboBox>
+        </Control>
+
+        <Control Id="TimeLabel" Type="Text" X="215" Y="88" Width="35" Height="15" Text="Time:" />
+        <Control Id="TimeEdit" Type="Edit" X="252" Y="84" Width="55" Height="18" Property="PCNINJA_TIME" />
+        <Control Id="TimeHint" Type="Text" X="310" Y="88" Width="38" Height="15" Text="HH:mm" />
+
+        <Control Id="DayOfWeekLabel" Type="Text" X="40" Y="113" Width="65" Height="15" Text="Week day:" />
+        <Control Id="DayOfWeekCombo" Type="ComboBox" X="108" Y="109" Width="90" Height="18" Property="PCNINJA_DAY_OF_WEEK" ComboList="yes">
+          <ComboBox Property="PCNINJA_DAY_OF_WEEK">
+            <ListItem Text="Sunday" Value="Sunday" />
+            <ListItem Text="Monday" Value="Monday" />
+            <ListItem Text="Tuesday" Value="Tuesday" />
+            <ListItem Text="Wednesday" Value="Wednesday" />
+            <ListItem Text="Thursday" Value="Thursday" />
+            <ListItem Text="Friday" Value="Friday" />
+            <ListItem Text="Saturday" Value="Saturday" />
+          </ComboBox>
+        </Control>
+
+        <Control Id="MonthlyDayLabel" Type="Text" X="215" Y="113" Width="70" Height="15" Text="Month day:" />
+        <Control Id="MonthlyDayEdit" Type="Edit" X="288" Y="109" Width="28" Height="18" Property="PCNINJA_MONTHLY_DAY" />
+        <Control Id="MonthlyDayHint" Type="Text" X="320" Y="113" Width="30" Height="15" Text="1-28" />
+
+        <Control Id="RunAtStartup" Type="CheckBox" X="40" Y="139" Width="220" Height="17" Property="PCNINJA_RUN_AT_STARTUP" CheckBoxValue="1" Text="Also run after computer startup" />
+        <Control Id="StartupDelayLabel" Type="Text" X="262" Y="140" Width="34" Height="15" Text="Delay:" />
+        <Control Id="StartupDelayEdit" Type="Edit" X="298" Y="136" Width="28" Height="18" Property="PCNINJA_STARTUP_DELAY" />
+        <Control Id="StartupDelayHint" Type="Text" X="330" Y="140" Width="25" Height="15" Text="min" />
+
+        <Control Id="RunIfMissed" Type="CheckBox" X="40" Y="164" Width="170" Height="17" Property="PCNINJA_RUN_IF_MISSED" CheckBoxValue="1" Text="Run if scheduled time is missed" />
+        <Control Id="WakeToRun" Type="CheckBox" X="218" Y="164" Width="130" Height="17" Property="PCNINJA_WAKE_TO_RUN" CheckBoxValue="1" Text="Wake computer" />
+
+        <Control Id="AutoRetry" Type="CheckBox" X="40" Y="185" Width="145" Height="17" Property="PCNINJA_ENABLE_AUTORETRY" CheckBoxValue="1" Text="Enable auto retry" />
+        <Control Id="RebootPrompt" Type="CheckBox" X="218" Y="185" Width="130" Height="17" Property="PCNINJA_REBOOT_PROMPT" CheckBoxValue="1" Text="Show reboot prompt" />
+
+        <Control Id="FirmwareUpdates" Type="CheckBox" X="40" Y="206" Width="145" Height="17" Property="PCNINJA_ALLOW_FIRMWARE" CheckBoxValue="1" Text="Allow BIOS/firmware" />
+
+        <Control Id="Hint" Type="Text" X="40" Y="222" Width="290" Height="12" Text="Defaults: Monthly, day 15, 03:00, startup delay 5 minutes." />
+
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="Back" />
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="Next" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel" />
+      </Dialog>
+
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="PcNinjaScheduleDlg" Order="10" Condition="1" />
+      <Publish Dialog="PcNinjaScheduleDlg" Control="Back" Event="NewDialog" Value="InstallDirDlg" />
+      <Publish Dialog="PcNinjaScheduleDlg" Control="Cancel" Event="SpawnDialog" Value="CancelDlg" />
+      <Publish Dialog="PcNinjaScheduleDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="PcNinjaScheduleDlg" Order="10" Condition="NOT Installed" />
+    </UI>
+
+    <CustomAction
+      Id="CleanupOnUninstall"
+      FileRef="MsiCleanupCmd"
+      ExeCommand=""
+      Execute="deferred"
+      Impersonate="no"
+      Return="ignore" />
+
+    <CustomAction Id="SetPcnEs" Property="PCN_ES" Value="[PCNINJA_ENABLE_SCHEDULE]" />
+    <CustomAction Id="SetPcnFr" Property="PCN_FR" Value="[PCNINJA_FREQUENCY]" />
+    <CustomAction Id="SetPcnTm" Property="PCN_TM" Value="[PCNINJA_TIME]" />
+    <CustomAction Id="SetPcnDow" Property="PCN_DOW" Value="[PCNINJA_DAY_OF_WEEK]" />
+    <CustomAction Id="SetPcnMd" Property="PCN_MD" Value="[PCNINJA_MONTHLY_DAY]" />
+    <CustomAction Id="SetPcnSt" Property="PCN_ST" Value="[PCNINJA_RUN_AT_STARTUP]" />
+    <CustomAction Id="SetPcnSd" Property="PCN_SD" Value="[PCNINJA_STARTUP_DELAY]" />
+    <CustomAction Id="SetPcnMiss" Property="PCN_MISS" Value="[PCNINJA_RUN_IF_MISSED]" />
+    <CustomAction Id="SetPcnWake" Property="PCN_WAKE" Value="[PCNINJA_WAKE_TO_RUN]" />
+    <CustomAction Id="SetPcnFw" Property="PCN_FW" Value="[PCNINJA_ALLOW_FIRMWARE]" />
+    <CustomAction Id="SetPcnRb" Property="PCN_RB" Value="[PCNINJA_REBOOT_PROMPT]" />
+    <CustomAction Id="SetPcnAr" Property="PCN_AR" Value="[PCNINJA_ENABLE_AUTORETRY]" />
+    <CustomAction Id="SetPcnRd" Property="PCN_RD" Value="[PCNINJA_RETRY_INITIAL_DELAY]" />
+    <CustomAction Id="SetPcnRa" Property="PCN_RA" Value="[PCNINJA_RETRY_MAX_ATTEMPTS]" />
+    <CustomAction Id="SetPcnBo" Property="PCN_BO" Value="[PCNINJA_RETRY_BACKOFF]" />
+    <CustomAction Id="SetPcnCd" Property="PCN_CD" Value="[PCNINJA_MINIMUM_COOLDOWN]" />
+
+    <CustomAction
+      Id="ConfigureAfterInstall"
+      FileRef="MsiConfigureCmd"
+      ExeCommand='-MsiData "[PCN_ES]|[PCN_FR]|[PCN_TM]|[PCN_DOW]|[PCN_MD]|[PCN_ST]|[PCN_SD]|[PCN_MISS]|[PCN_WAKE]|[PCN_FW]|[PCN_RB]|[PCN_AR]|[PCN_RD]|[PCN_RA]|[PCN_BO]|[PCN_CD]"'
+      Execute="deferred"
+      Impersonate="no"
+      Return="check" />
+
+    <InstallExecuteSequence>
+      <Custom Action="SetPcnEs" Before="ConfigureAfterInstall" Condition="PCNINJA_ENABLE_SCHEDULE AND NOT PCN_ES" />
+      <Custom Action="SetPcnFr" Before="ConfigureAfterInstall" Condition="PCNINJA_FREQUENCY AND NOT PCN_FR" />
+      <Custom Action="SetPcnTm" Before="ConfigureAfterInstall" Condition="PCNINJA_TIME AND NOT PCN_TM" />
+      <Custom Action="SetPcnDow" Before="ConfigureAfterInstall" Condition="PCNINJA_DAY_OF_WEEK AND NOT PCN_DOW" />
+      <Custom Action="SetPcnMd" Before="ConfigureAfterInstall" Condition="PCNINJA_MONTHLY_DAY AND NOT PCN_MD" />
+      <Custom Action="SetPcnSt" Before="ConfigureAfterInstall" Condition="PCNINJA_RUN_AT_STARTUP AND NOT PCN_ST" />
+      <Custom Action="SetPcnSd" Before="ConfigureAfterInstall" Condition="PCNINJA_STARTUP_DELAY AND NOT PCN_SD" />
+      <Custom Action="SetPcnMiss" Before="ConfigureAfterInstall" Condition="PCNINJA_RUN_IF_MISSED AND NOT PCN_MISS" />
+      <Custom Action="SetPcnWake" Before="ConfigureAfterInstall" Condition="PCNINJA_WAKE_TO_RUN AND NOT PCN_WAKE" />
+      <Custom Action="SetPcnFw" Before="ConfigureAfterInstall" Condition="PCNINJA_ALLOW_FIRMWARE AND NOT PCN_FW" />
+      <Custom Action="SetPcnRb" Before="ConfigureAfterInstall" Condition="PCNINJA_REBOOT_PROMPT AND NOT PCN_RB" />
+      <Custom Action="SetPcnAr" Before="ConfigureAfterInstall" Condition="PCNINJA_ENABLE_AUTORETRY AND NOT PCN_AR" />
+      <Custom Action="SetPcnRd" Before="ConfigureAfterInstall" Condition="PCNINJA_RETRY_INITIAL_DELAY AND NOT PCN_RD" />
+      <Custom Action="SetPcnRa" Before="ConfigureAfterInstall" Condition="PCNINJA_RETRY_MAX_ATTEMPTS AND NOT PCN_RA" />
+      <Custom Action="SetPcnBo" Before="ConfigureAfterInstall" Condition="PCNINJA_RETRY_BACKOFF AND NOT PCN_BO" />
+      <Custom Action="SetPcnCd" Before="ConfigureAfterInstall" Condition="PCNINJA_MINIMUM_COOLDOWN AND NOT PCN_CD" />
+
+      <Custom
+        Action="ConfigureAfterInstall"
+        After="InstallFiles"
+        Condition='NOT REMOVE AND PCN_ES &lt;&gt; ""' />
+
+      <Custom
+        Action="CleanupOnUninstall"
+        Before="RemoveFiles"
+        Condition='REMOVE="ALL" AND NOT UPGRADINGPRODUCTCODE' />
+    </InstallExecuteSequence>
+
+    <Feature Id="MainFeature" Title="PcNinja WinUpdate Tool" Level="1">
+      <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="StartMenuShortcutComponent" />
+    </Feature>
+  </Package>
+</Wix>
+
+
+
+
+
+
+
+
+

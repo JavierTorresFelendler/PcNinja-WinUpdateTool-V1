@@ -1,0 +1,19 @@
+* text=auto
+
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
+*.cmd text eol=crlf
+*.vbs text eol=crlf
+*.cs text eol=crlf
+*.wxs text eol=crlf
+*.rtf text eol=crlf
+*.md text eol=lf
+*.txt text eol=crlf
+*.yml text eol=lf
+
+*.png binary
+*.ico binary
+*.exe binary
+*.msi binary
+*.zip binary
+*.wixpdb binary

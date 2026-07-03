@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  syntax-check:
+    name: PowerShell syntax check
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate PowerShell scripts
+        shell: pwsh
+        run: |
+          $files = @(
+            '.\WinUpdateTool.ps1',
+            '.\WinUpdateCore.psm1',
+            '.\Install-WinUpdateTool.ps1',
+            '.\Uninstall-WinUpdateTool.ps1',
+            '.\MsiConfigure-WinUpdateTool.ps1',
+            '.\MsiCleanup-WinUpdateTool.ps1',
+            '.\packaging\Build-Packages.ps1'
+          )
+
+          foreach ($file in $files) {
+            $null = [scriptblock]::Create((Get-Content -LiteralPath $file -Raw))
+            "SYNTAX OK: $file"
+          }
