@@ -4,7 +4,7 @@ PcNinja WinUpdate Tool is a Windows Update management utility for technicians, m
 
 It provides a desktop GUI, command-line modes, an MSI installer, a portable executable, scheduled update runs, driver audit support, deployment examples, and release hashes.
 
-This repository is the V1 legacy release line. V2 lives separately at https://github.com/JavierTorresFelendler/PcNinja-WinUpdateTool-V2.
+This repository is the V1 legacy release line. V2 lives separately at https://github.com/JavierTorresFelendler/PcNinja-WinUpdateTool-V2 (current V2 stable: V2.2.3). New installations should prefer the V2 line.
 
 ## Current Release
 
