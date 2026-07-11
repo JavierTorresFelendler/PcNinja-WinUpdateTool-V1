@@ -73,11 +73,64 @@
 $ErrorActionPreference = 'Stop'
 $modulePath = Join-Path $PSScriptRoot 'WinUpdateCore.psm1'
 Import-Module $modulePath -Force
-$script:PcnToolVersion = '1.1.2.0'
+$script:PcnToolVersion = '1.1.3.0'
 $script:PcnCliBoundParameters = $PSBoundParameters
 
 if ($Json) {
     Set-PcnConsoleLogEnabled -Enabled $false
+}
+
+function Invoke-PcnSoftAlertSound {
+    param([switch]$Important)
+
+    if (-not $Important) {
+        return
+    }
+
+    try {
+        $soundPath = Join-Path $PSScriptRoot 'assets\PcNinja-SoftAlert.wav'
+        if (Test-Path -LiteralPath $soundPath) {
+            $player = New-Object System.Media.SoundPlayer $soundPath
+            $player.Play()
+        }
+    }
+    catch {
+        $null = $_
+    }
+}
+
+function Show-PcnMessageBox {
+    param(
+        [Parameter(ValueFromRemainingArguments = $true)]
+        [object[]]$Args
+    )
+
+    if ($Args.Count -eq 1 -and $Args[0] -is [array]) {
+        $Args = @($Args[0])
+    }
+
+    $text = if ($Args.Count -ge 1) { [string]$Args[0] } else { '' }
+    $caption = if ($Args.Count -ge 2) { [string]$Args[1] } else { 'PcNinja WinUpdate Tool' }
+    $buttons = if ($Args.Count -ge 3) { [string]$Args[2] } else { 'OK' }
+    $requestedIcon = if ($Args.Count -ge 4) { [string]$Args[3] } else { 'None' }
+
+    $importantIcons = @('Warning', 'Error', 'Question')
+    Invoke-PcnSoftAlertSound -Important:($importantIcons -contains $requestedIcon)
+
+    $buttonValue = [System.Windows.Forms.MessageBoxButtons]::OK
+    try {
+        $buttonValue = [System.Windows.Forms.MessageBoxButtons]::$buttons
+    }
+    catch {
+        $buttonValue = [System.Windows.Forms.MessageBoxButtons]::OK
+    }
+
+    return [System.Windows.Forms.MessageBox]::Show(
+        $text,
+        $caption,
+        $buttonValue,
+        [System.Windows.Forms.MessageBoxIcon]::None
+    )
 }
 
 function Test-PcnCliParameter {
@@ -810,7 +863,7 @@ if ($Mode -in @('DriverReport', 'DriverAudit')) {
 if (-not (Test-PcnAdministrator)) {
     if ($Mode -eq 'UI') {
         Add-Type -AssemblyName System.Windows.Forms
-        [System.Windows.Forms.MessageBox]::Show(
+        Show-PcnMessageBox(
             'PcNinja WinUpdate Tool needs administrator privileges. Click OK to relaunch it as Administrator.',
             'Administrator Required',
             'OK',
@@ -2587,7 +2640,7 @@ function Request-PcnUiRetry {
     }
 
     if ([bool]$config.InstallFirmwareUpdates) {
-        $answer = [System.Windows.Forms.MessageBox]::Show(
+        $answer = Show-PcnMessageBox(
             "Firmware/BIOS updates are enabled for the automatic retry.`r`n`r`nContinue only if the machine is on reliable power and you are comfortable letting Windows Update install firmware packages when the retry starts.",
             'Firmware Updates Enabled',
             'YesNo',
@@ -2844,7 +2897,7 @@ function Invoke-PcnRestartPrompt {
         return
     }
 
-    $answer = [System.Windows.Forms.MessageBox]::Show(
+    $answer = Show-PcnMessageBox(
         'Windows reports that a restart is required. Restart this machine now?',
         'Restart Required',
         'YesNo',
@@ -3050,7 +3103,7 @@ function Invoke-PcnUiManualUpdate {
         }
 
         if ([bool]$config.InstallFirmwareUpdates) {
-            $answer = [System.Windows.Forms.MessageBox]::Show(
+            $answer = Show-PcnMessageBox(
                 "Firmware/BIOS updates are enabled for this run.`r`n`r`nContinue only if the machine is on reliable power and you are comfortable letting Windows Update install firmware packages.",
                 'Firmware Updates Enabled',
                 'YesNo',
@@ -3073,7 +3126,7 @@ function Invoke-PcnUiManualUpdate {
         $runButton.Enabled = $true
         $dashboardRunButton.Enabled = $true
         $dashboardResetWuButton.Enabled = $true
-        [System.Windows.Forms.MessageBox]::Show($_.Exception.Message, 'Run Error', 'OK', 'Error') | Out-Null
+        Show-PcnMessageBox($_.Exception.Message, 'Run Error', 'OK', 'Error') | Out-Null
     }
 }
 
@@ -3089,7 +3142,7 @@ function Invoke-PcnUiDriverAudit {
         Refresh-PcnUiLog
         Refresh-PcnDashboard
 
-        $answer = [System.Windows.Forms.MessageBox]::Show(
+        $answer = Show-PcnMessageBox(
             "Driver audit report created.`r`n`r`nCSV:`r`n$($report.CsvPath)`r`n`r`nAudit candidates: $($report.AuditCandidateDevices)`r`nHigh priority: $($report.HighPriorityAuditCandidates)`r`nTotal driver entries: $($report.TotalDevices)`r`n`r`nOpen the report folder?",
             'Driver Audit Created',
             'YesNo',
@@ -3103,7 +3156,7 @@ function Invoke-PcnUiDriverAudit {
     }
     catch {
         $footer.Text = 'Could not create driver audit.'
-        [System.Windows.Forms.MessageBox]::Show($_.Exception.Message, 'Driver Audit Error', 'OK', 'Error') | Out-Null
+        Show-PcnMessageBox($_.Exception.Message, 'Driver Audit Error', 'OK', 'Error') | Out-Null
     }
     finally {
         $driverReportButton.Enabled = $true
@@ -3117,7 +3170,7 @@ function Invoke-PcnUiWindowsUpdateReset {
             return
         }
 
-        $answer = [System.Windows.Forms.MessageBox]::Show(
+        $answer = Show-PcnMessageBox(
             "Reset Windows Update will stop Windows Update services, delete the local cache folder, recreate it, and start the services again:`r`n`r`nC:\Windows\SoftwareDistribution`r`n`r`nUse this when Windows Update appears stuck scanning or downloading. Continue?",
             'Reset Windows Update',
             'YesNo',
@@ -3133,7 +3186,7 @@ function Invoke-PcnUiWindowsUpdateReset {
     }
     catch {
         $footer.Text = 'Could not start Windows Update reset.'
-        [System.Windows.Forms.MessageBox]::Show($_.Exception.Message, 'Reset Error', 'OK', 'Error') | Out-Null
+        Show-PcnMessageBox($_.Exception.Message, 'Reset Error', 'OK', 'Error') | Out-Null
     }
 }
 
@@ -3168,7 +3221,7 @@ $saveSchedule.Add_Click({
         $config = Get-PcnUiConfig
 
         if ($config.Enabled -and [bool]$config.InstallFirmwareUpdates) {
-            $answer = [System.Windows.Forms.MessageBox]::Show(
+            $answer = Show-PcnMessageBox(
                 "Firmware/BIOS updates are enabled.`r`n`r`nScheduled runs may install firmware without another prompt. Continue saving this schedule?",
                 'Firmware Updates Enabled',
                 'YesNo',
@@ -3209,7 +3262,7 @@ $saveSchedule.Add_Click({
     }
     catch {
         $footer.Text = 'Could not save schedule.'
-        [System.Windows.Forms.MessageBox]::Show($_.Exception.Message, 'Schedule Error', 'OK', 'Error') | Out-Null
+        Show-PcnMessageBox($_.Exception.Message, 'Schedule Error', 'OK', 'Error') | Out-Null
     }
 })
 
@@ -3234,7 +3287,7 @@ $removeSchedule.Add_Click({
         Refresh-PcnDashboard -Force
     }
     catch {
-        [System.Windows.Forms.MessageBox]::Show($_.Exception.Message, 'Remove Schedule Error', 'OK', 'Error') | Out-Null
+        Show-PcnMessageBox($_.Exception.Message, 'Remove Schedule Error', 'OK', 'Error') | Out-Null
     }
 })
 
@@ -3506,7 +3559,7 @@ catch {
 
     try {
         Add-Type -AssemblyName System.Windows.Forms
-        [System.Windows.Forms.MessageBox]::Show(
+        Show-PcnMessageBox(
             "$message`r`n`r`nA diagnostic log was written to:`r`nC:\ProgramData\PcNinja\WinUpdateTool\Logs\GuiStartup.log",
             'PcNinja WinUpdate Tool',
             'OK',

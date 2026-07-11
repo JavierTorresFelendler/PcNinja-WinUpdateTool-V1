@@ -7,4 +7,3 @@ set "CLI=%ProgramFiles%\PcNinja\WinUpdateTool\PcNinja.WinUpdateTool.Cli.exe"
 "%CLI%" -Mode RunUpdates -Silent -RunType Manual -Json
 "%CLI%" -Mode ResetWindowsUpdate -ConfirmReset -Json
 exit /b %ERRORLEVEL%
-

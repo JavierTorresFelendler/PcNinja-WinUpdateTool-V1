@@ -5,7 +5,7 @@
   <Package
     Name="PcNinja WinUpdate Tool"
     Manufacturer="PcNinja"
-    Version="1.1.2.0"
+    Version="1.1.3.0"
     UpgradeCode="{7BD3183C-C7D9-4F0C-BAE9-FF143A450F53}"
     Scope="perMachine">
 

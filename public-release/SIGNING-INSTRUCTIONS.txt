@@ -1,10 +1,5 @@
-Signing status: unsigned
+﻿Signing status: unsigned
 
-No code-signing certificate was available on this build machine, so the MSI and portable EXE are not Authenticode-signed.
-
-Recommended production signing command examples:
-
-signtool sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /a "PcNinja-WinUpdateTool-V1.1.2-Portable.exe"
-signtool sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /a "PcNinja-WinUpdateTool-V1.1.2-Setup-x64.msi"
+Windows SmartScreen or endpoint security tools may warn before execution.
 
 After signing, regenerate SHA256SUMS.txt.

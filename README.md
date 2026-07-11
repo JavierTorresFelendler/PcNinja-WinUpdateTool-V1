@@ -1,4 +1,4 @@
-# PcNinja WinUpdate Tool V1
+﻿# PcNinja WinUpdate Tool V1
 
 PcNinja WinUpdate Tool is a Windows Update management utility for technicians, managed-service workflows, and advanced Windows maintenance.
 
@@ -8,10 +8,17 @@ This repository is the V1 legacy release line. V2 lives separately at https://gi
 
 ## Current Release
 
-- Public version: `V1.1.2`
-- Internal package version: `1.1.2.0`
-- Release tag: `v1.1.2`
-- Release status: unsigned unless signed separately
+- Public version: `V1.1.3-RC1`
+- Internal package version: `1.1.3.0`
+- Release tag: `v1.1.3-rc1`
+- Release status: release candidate, unsigned unless signed separately
+
+## New In V1.1.3-RC1
+
+- Adds `assets/PcNinja-SoftAlert.wav`, blended from Javier's preferred preview tones.
+- Routes V1 dialogs through quiet wrappers so routine informational dialogs are silent.
+- Plays the soft PcNinja alert only for important warning, error, and question dialogs.
+- Suppresses the default Windows MessageBox icon sound by showing app dialogs with no native MessageBox icon.
 
 ## Features
 
@@ -26,9 +33,9 @@ This repository is the V1 legacy release line. V2 lives separately at https://gi
 
 Use the GitHub Releases page for installable builds:
 
-- `PcNinja-WinUpdateTool-V1.1.2-Setup-x64.msi`
-- `PcNinja-WinUpdateTool-V1.1.2-Portable.exe`
-- `PcNinja-WinUpdateTool-V1.1.2-PublicRelease.zip`
+- `PcNinja-WinUpdateTool-V1.1.3-RC1-Setup-x64.msi`
+- `PcNinja-WinUpdateTool-V1.1.3-RC1-Portable.exe`
+- `PcNinja-WinUpdateTool-V1.1.3-RC1-PublicRelease.zip`
 
 ## Repository Layout
 

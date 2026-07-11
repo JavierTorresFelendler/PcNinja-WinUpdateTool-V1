@@ -49,4 +49,3 @@ Important:
   The MSI post-install configuration runs elevated as LocalSystem.
   MSI post-install configuration log:
   %ProgramData%\PcNinja\WinUpdateTool\Logs\MsiConfigure.log
-

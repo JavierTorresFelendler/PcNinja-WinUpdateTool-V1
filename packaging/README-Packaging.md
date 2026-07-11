@@ -1,9 +1,9 @@
 ﻿# PcNinja WinUpdate Tool Packaging
 
-V1.1.2 produces two product deliverables from the same app files:
+V1.1.3-RC1 produces two product deliverables from the same app files:
 
-- `PcNinja-WinUpdateTool-Setup-1.1.2.0-x64.msi`
-- `PcNinja-WinUpdateTool-Portable-1.1.2.0.exe`
+- `PcNinja-WinUpdateTool-Setup-1.1.3.0-x64.msi`
+- `PcNinja-WinUpdateTool-Portable-1.1.3.0.exe`
 
 Build command:
 
@@ -23,9 +23,9 @@ Normal interactive MSI installs show a wizard with license, install-folder, sche
 
 The MSI can be deployed silently with `msiexec /qn` and can apply post-install configuration through public `PCNINJA_*` MSI properties.
 
-JSON-based MSI deployment is not included in V1.1.2.
+JSON-based MSI deployment is not included in V1.1.3-RC1.
 
-The portable EXE is a small .NET Framework launcher with the app payload embedded as a zip resource. It always extracts under `%LOCALAPPDATA%\PcNinja\WinUpdateTool\Portable\1.1.2.0`. With no arguments it launches `PcNinja.WinUpdateTool.exe`; with arguments it forwards them to `PcNinja.WinUpdateTool.Cli.exe`.
+The portable EXE is a small .NET Framework launcher with the app payload embedded as a zip resource. It always extracts under `%LOCALAPPDATA%\PcNinja\WinUpdateTool\Portable\1.1.3.0`. With no arguments it launches `PcNinja.WinUpdateTool.exe`; with arguments it forwards them to `PcNinja.WinUpdateTool.Cli.exe`.
 
 Deployment examples are generated under `dist\deployment-examples`.
 

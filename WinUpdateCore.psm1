@@ -53,6 +53,60 @@ function Get-PcnPowershellPath {
     return Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
 }
 
+function Invoke-PcnSoftAlertSound {
+    param([switch]$Important)
+
+    if (-not $Important) {
+        return
+    }
+
+    try {
+        $soundPath = Join-Path $PSScriptRoot 'assets\PcNinja-SoftAlert.wav'
+        if (Test-Path -LiteralPath $soundPath) {
+            $player = New-Object System.Media.SoundPlayer $soundPath
+            $player.Play()
+        }
+    }
+    catch {
+        $null = $_
+    }
+}
+
+function Show-PcnCoreMessageBox {
+    param(
+        [Parameter(ValueFromRemainingArguments = $true)]
+        [object[]]$Args
+    )
+
+    if ($Args.Count -eq 1 -and $Args[0] -is [array]) {
+        $Args = @($Args[0])
+    }
+
+    $text = if ($Args.Count -ge 1) { [string]$Args[0] } else { '' }
+    $caption = if ($Args.Count -ge 2) { [string]$Args[1] } else { 'PcNinja WinUpdate Tool' }
+    $buttons = if ($Args.Count -ge 3) { [string]$Args[2] } else { 'OK' }
+    $requestedIcon = if ($Args.Count -ge 4) { [string]$Args[3] } else { 'None' }
+
+    $importantIcons = @('Warning', 'Error', 'Question')
+    Invoke-PcnSoftAlertSound -Important:($importantIcons -contains $requestedIcon)
+
+    Add-Type -AssemblyName System.Windows.Forms
+    $buttonValue = [System.Windows.Forms.MessageBoxButtons]::OK
+    try {
+        $buttonValue = [System.Windows.Forms.MessageBoxButtons]::$buttons
+    }
+    catch {
+        $buttonValue = [System.Windows.Forms.MessageBoxButtons]::OK
+    }
+
+    return [System.Windows.Forms.MessageBox]::Show(
+        $text,
+        $caption,
+        $buttonValue,
+        [System.Windows.Forms.MessageBoxIcon]::None
+    )
+}
+
 function Convert-PcnUpdateResultCode {
     param(
         [Parameter(Mandatory = $true)]
@@ -2935,7 +2989,7 @@ function Start-PcnWindowsUpdateInstall {
                 if ($ShowRebootPrompt -and -not $Silent) {
                     try {
                         Add-Type -AssemblyName PresentationFramework
-                        [System.Windows.MessageBox]::Show(
+                        Show-PcnCoreMessageBox(
                             "Updates have been installed. A restart is required before the next update scan can continue.`nPlease save your work and restart as soon as possible.",
                             'PcNinja Update Notice',
                             'OK',

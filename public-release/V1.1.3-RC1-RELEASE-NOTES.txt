@@ -1,0 +1,12 @@
+﻿PcNinja WinUpdate Tool V1.1.3-RC1 Release Notes
+
+Release candidate for the V1 legacy line.
+
+Highlights:
+- Adds a softer PcNinja alert sound for important warning, error, and question dialogs.
+- Keeps routine informational dialogs silent and suppresses the harsh default Windows MessageBox sound.
+- Keeps Windows Update, scheduling, driver audit, MSI, portable, and CLI behavior based on V1.1.2.
+
+Notes:
+- This release is unsigned unless signing was enabled during build.
+- Destructive Windows Update reset testing should be done in a VM.
