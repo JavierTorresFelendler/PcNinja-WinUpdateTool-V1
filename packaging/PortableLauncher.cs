@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+using PcNinja.Shared;
 
 [assembly: AssemblyTitle("PcNinja WinUpdate Tool Portable")]
 [assembly: AssemblyCompany("PcNinja")]
@@ -17,6 +18,9 @@ using System.Windows.Forms;
 
 internal static class PortableLauncher
 {
+    // Fixed shared single-instance id (same as the installed host). Never version it.
+    private const string SingleInstanceAppId = "WinUpdateTool";
+
     private const string Version = "1.1.2.0";
     private const string PayloadResourceName = "PcNinjaPortablePayload";
 
@@ -37,6 +41,13 @@ internal static class PortableLauncher
                     ShowHelpWindow();
                 }
 
+                return 0;
+            }
+
+            // The GUI is single-instance per Windows session. If it is already open,
+            // focus it and do not re-extract runtime files that it is using.
+            if (args.Length == 0 && PcNinjaSingleInstance.TryActivateExisting(SingleInstanceAppId))
+            {
                 return 0;
             }
 
