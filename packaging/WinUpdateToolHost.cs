@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 using System.Windows.Forms;
+using PcNinja.Shared;
 
 [assembly: AssemblyTitle("PcNinja WinUpdate Tool")]
 [assembly: AssemblyCompany("PcNinja")]
@@ -19,6 +20,9 @@ using System.Windows.Forms;
 
 internal static class WinUpdateToolHost
 {
+    // Fixed shared single-instance id (V1 and V2 share it: same tool, same machine state). Never version it.
+    private const string SingleInstanceAppId = "WinUpdateTool";
+
     private const string AppUserModelId = "PcNinja.WinUpdateTool";
 
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
@@ -45,15 +49,30 @@ internal static class WinUpdateToolHost
                 throw new FileNotFoundException("WinUpdateTool.ps1 was not found beside the host executable.", scriptPath);
             }
 
+            // The GUI is single-instance per Windows session: a second launch focuses
+            // the running window (checked before UAC, so no needless elevation prompt).
             if (!IsAdministrator())
             {
+                if (PcNinjaSingleInstance.TryActivateExisting(SingleInstanceAppId))
+                {
+                    return 0;
+                }
+
                 return RelaunchElevated(args);
             }
 
-            Directory.SetCurrentDirectory(appDir);
-            Environment.SetEnvironmentVariable("PSExecutionPolicyPreference", "Bypass", EnvironmentVariableTarget.Process);
+            using (PcNinjaSingleInstance singleInstance = PcNinjaSingleInstance.Acquire(SingleInstanceAppId))
+            {
+                if (singleInstance == null)
+                {
+                    return 0;
+                }
 
-            return RunPowerShellScript(scriptPath, args);
+                Directory.SetCurrentDirectory(appDir);
+                Environment.SetEnvironmentVariable("PSExecutionPolicyPreference", "Bypass", EnvironmentVariableTarget.Process);
+
+                return RunPowerShellScript(scriptPath, args);
+            }
         }
         catch (Exception ex)
         {

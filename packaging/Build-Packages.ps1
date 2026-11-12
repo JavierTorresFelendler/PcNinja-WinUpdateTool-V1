@@ -21,6 +21,8 @@ $cliExePath = Join-Path $packageRoot 'PcNinja.WinUpdateTool.Cli.exe'
 $wxsPath = Join-Path $packagingDir 'PcNinja.WinUpdateTool.wxs'
 $launcherSource = Join-Path $packagingDir 'PortableLauncher.cs'
 $hostSource = Join-Path $packagingDir 'WinUpdateToolHost.cs'
+# Shared PcNinja single-instance guard; keep byte-identical across PcNinja tools.
+$singleInstanceSource = Join-Path (Split-Path -Parent $packagingDir) 'shared\PcNinjaSingleInstance.cs'
 $cliSource = Join-Path $packagingDir 'WinUpdateToolCli.cs'
 $iconPath = Join-Path $packageRoot 'assets\PcNinja.ico'
 
@@ -229,7 +231,8 @@ if (-not (Test-Path -LiteralPath $powerShellAutomation)) {
     /reference:$powerShellAutomation `
     /reference:System.Windows.Forms.dll `
     /reference:System.Drawing.dll `
-    $hostSource
+    $hostSource `
+    $singleInstanceSource
 
 if ($LASTEXITCODE -ne 0) {
     throw "Branded host compile failed with exit code $LASTEXITCODE."
@@ -321,7 +324,8 @@ finally {
     /reference:System.IO.Compression.FileSystem.dll `
     /reference:System.Windows.Forms.dll `
     /reference:System.Drawing.dll `
-    $launcherSource
+    $launcherSource `
+    $singleInstanceSource
 
 if ($LASTEXITCODE -ne 0) {
     throw "Portable launcher compile failed with exit code $LASTEXITCODE."
